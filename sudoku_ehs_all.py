@@ -91,11 +91,11 @@ if __name__ == "__main__":
         for c in range(N):
             for d in range(N):
                 num = (r * N + c) * N + d
-                choices[num].append((r * N + c) * 4)
-                choices[num].append((r * N + d) * 4 + 1)
-                choices[num].append((c * N + d) * 4 + 2)
-                b = (r // n) + (c // n) * n
-                choices[num].append((b * N + d) * 4 + 3)
+                choices[num].append(r * N + c)
+                choices[num].append(r * N + d + N * N)
+                choices[num].append(c * N + d + 2 * N * N)
+                b = (r // n) * n + c // n
+                choices[num].append(b * N + d + 3 * N * N)
 
     constraints = defaultdict(set)
     for i in choices:
