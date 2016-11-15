@@ -68,15 +68,16 @@ def check(elem, i, j, n, matrix):
 def resolve(n, matrix, ind, work):
     ret = []
     for elem in work[ind][1]:
-        if check(elem, work[ind][0][0], work[ind][0][1], n, matrix):
-            matrix[work[ind][0][0]][work[ind][0][1]] = elem
+        i, j = work[ind][0][0], work[ind][0][1]
+        if check(elem, i, j, n, matrix):
+            matrix[i][j] = elem
             if ind == len(work) - 1:
-                ret.append([[[work[ind][0][0], work[ind][0][1]], elem]])
+                ret.append([[[i, j], elem]])
             else:
                 ret_next = resolve(n, matrix, ind + 1, work)
                 for p in ret_next:
-                    ret.append([[[work[ind][0][0], work[ind][0][1]], elem]] + p)
-            matrix[work[ind][0][0]][work[ind][0][1]] = 0
+                    ret.append([[[i, j], elem]] + p)
+            matrix[i][j] = 0
 
     return ret
 
