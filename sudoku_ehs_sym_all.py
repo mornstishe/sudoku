@@ -79,23 +79,23 @@ if __name__ == "__main__":
     N = n * n
 
     '''
-        Row-Column constraint number is r * N + c
-        Row-Number constraint number is r * N + d + N * N
-        Column-Number constraint number is c * N + d + 2 * N * N
-        Block-Number constraint number is b * N + d + 3 * N * N
+        Row-Column constraint number is rNcN#d
+        Row-Number constraint number is rN#d
+        Column-Number constraint number is cN#d
+        Block-Number constraint number is bN#d
         Block number is (r // n) * n + c // n
     '''
 
-    choices = {i: [] for i in range(N * N * N)}
+    choices = {'r' + str(r) + 'c' + str(c) + '#' + str(d): [] for r in range(N) for c in range(N) for d in range(N)}
     for r in range(N):
         for c in range(N):
             for d in range(N):
-                num = (r * N + c) * N + d
-                choices[num].append(r * N + c)
-                choices[num].append(r * N + d + N * N)
-                choices[num].append(c * N + d + 2 * N * N)
+                num = 'r' + str(r) + 'c' + str(c) + '#' + str(d)
+                choices[num].append('r' + str(r) + 'c' + str(c))
+                choices[num].append('r' + str(r) + '#' + str(d))
+                choices[num].append('c' + str(c) + '#' + str(d))
                 b = (r // n) * n + c // n
-                choices[num].append(b * N + d + 3 * N * N)
+                choices[num].append('b' + str(b) + '#' + str(d))
 
     constraints = defaultdict(set)
     for i in choices:
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     for i in (range(N)):
         for j in (range(N)):
             if matrix[i][j] > 0:
-                initial.append((i * N + j) * N + matrix[i][j] - 1)
+                initial.append('r' + str(i) + 'c' + str(j) + '#' + str(matrix[i][j] - 1))
 
     print(choices)
     print(constraints)
@@ -125,9 +125,9 @@ if __name__ == "__main__":
     if len(ret) == 1:
         res = ret[0]
         for i in res:
-            t, d = divmod(i, N)
-            d += 1
-            r, c = divmod(t, N)
+            r = int(i[1])
+            c = int(i[3])
+            d = int(i[5]) + 1
             matrix[r][c] = d
 
         print(matrix)
