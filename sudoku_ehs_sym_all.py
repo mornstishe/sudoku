@@ -86,16 +86,16 @@ if __name__ == "__main__":
         Block number is (r // n) * n + c // n
     '''
 
-    choices = {'r' + str(r) + 'c' + str(c) + '#' + str(d): [] for r in range(N) for c in range(N) for d in range(N)}
+    choices = {'r' + str(r + 1) + 'c' + str(c + 1) + '#' + str(d + 1): [] for r in range(N) for c in range(N) for d in range(N)}
     for r in range(N):
         for c in range(N):
             for d in range(N):
-                num = 'r' + str(r) + 'c' + str(c) + '#' + str(d)
-                choices[num].append('r' + str(r) + 'c' + str(c))
-                choices[num].append('r' + str(r) + '#' + str(d))
-                choices[num].append('c' + str(c) + '#' + str(d))
+                num = 'r' + str(r + 1) + 'c' + str(c + 1) + '#' + str(d + 1)
+                choices[num].append('r' + str(r + 1) + 'c' + str(c + 1))
+                choices[num].append('r' + str(r + 1) + '#' + str(d + 1))
+                choices[num].append('c' + str(c + 1) + '#' + str(d + 1))
                 b = (r // n) * n + c // n
-                choices[num].append('b' + str(b) + '#' + str(d))
+                choices[num].append('b' + str(b + 1) + '#' + str(d + 1))
 
     constraints = defaultdict(set)
     for i in choices:
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     for i in (range(N)):
         for j in (range(N)):
             if matrix[i][j] > 0:
-                initial.append('r' + str(i) + 'c' + str(j) + '#' + str(matrix[i][j] - 1))
+                initial.append('r' + str(i + 1) + 'c' + str(j + 1) + '#' + str(matrix[i][j]))
 
     print(choices)
     print(constraints)
@@ -125,9 +125,9 @@ if __name__ == "__main__":
     if len(ret) == 1:
         res = ret[0]
         for i in res:
-            r = int(i[1])
-            c = int(i[3])
-            d = int(i[5]) + 1
+            r = int(i[1]) - 1
+            c = int(i[3]) - 1
+            d = int(i[5])
             matrix[r][c] = d
 
         print(matrix)
