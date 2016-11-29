@@ -1,5 +1,6 @@
 import sys
 from collections import defaultdict
+import time
 
 
 def read(fname):
@@ -86,7 +87,8 @@ if __name__ == "__main__":
         Block number is (r // n) * n + c // n
     '''
 
-    choices = {'r' + str(r + 1) + 'c' + str(c + 1) + '#' + str(d + 1): [] for r in range(N) for c in range(N) for d in range(N)}
+    choices = {'r' + str(r + 1) + 'c' + str(c + 1) + '#' + str(d + 1): [] for r in range(N) for c in range(N) for d in
+               range(N)}
     for r in range(N):
         for c in range(N):
             for d in range(N):
@@ -118,7 +120,11 @@ if __name__ == "__main__":
     for i in initial:
         exclude_choice(i, choices, constraints, active_constraints)
 
+    t1 = time.time()
     ret = resolve(N, choices, constraints, active_constraints)
+    t2 = time.time()
+
+    print(t2 - t1)
 
     print(len(ret))
 

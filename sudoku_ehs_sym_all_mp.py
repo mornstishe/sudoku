@@ -1,5 +1,7 @@
 import sys
 from collections import defaultdict
+import multiprocessing
+import copy
 import time
 
 
@@ -28,6 +30,42 @@ def read(fname):
             n += 1
 
     return 0, []
+
+
+def check_row(elem, i, matrix):
+    for j in (range(len(matrix))):
+        if matrix[i][j] == elem:
+            return False
+    else:
+        return True
+
+
+def check_column(elem, j, matrix):
+    for i in (range(len(matrix))):
+        if matrix[i][j] == elem:
+            return False
+    else:
+        return True
+
+
+def check_square(elem, i, j, n, matrix):
+    ind1 = int(i / n)
+    ind2 = int(j / n)
+    for i1 in (range(ind1 * n, (ind1 + 1) * n)):
+        for j1 in (range(ind2 * n, (ind2 + 1) * n)):
+            if matrix[i1][j1] == elem:
+                return False
+    else:
+        return True
+
+
+def check(elem, i, j, n, matrix):
+    if check_row(elem, i, matrix) \
+            and check_column(elem, j, matrix) \
+            and check_square(elem, i, j, n, matrix):
+        return True
+    else:
+        return False
 
 
 def exclude_choice(choice, choices, constraints, active_constraints):
@@ -80,23 +118,24 @@ if __name__ == "__main__":
     N = n * n
 
     '''
-        Row-Column constraint number is r * N + c
-        Row-Number constraint number is r * N + d + N * N
-        Column-Number constraint number is c * N + d + 2 * N * N
-        Block-Number constraint number is b * N + d + 3 * N * N
+        Row-Column constraint number is rNcN#d
+        Row-Number constraint number is rN#d
+        Column-Number constraint number is cN#d
+        Block-Number constraint number is bN#d
         Block number is (r // n) * n + c // n
     '''
 
-    choices = {i: [] for i in range(N * N * N)}
+    choices = {'r' + str(r + 1) + 'c' + str(c + 1) + '#' + str(d + 1): [] for r in range(N) for c in range(N) for d in
+               range(N)}
     for r in range(N):
         for c in range(N):
             for d in range(N):
-                num = (r * N + c) * N + d
-                choices[num].append(r * N + c)
-                choices[num].append(r * N + d + N * N)
-                choices[num].append(c * N + d + 2 * N * N)
+                num = 'r' + str(r + 1) + 'c' + str(c + 1) + '#' + str(d + 1)
+                choices[num].append('r' + str(r + 1) + 'c' + str(c + 1))
+                choices[num].append('r' + str(r + 1) + '#' + str(d + 1))
+                choices[num].append('c' + str(c + 1) + '#' + str(d + 1))
                 b = (r // n) * n + c // n
-                choices[num].append(b * N + d + 3 * N * N)
+                choices[num].append('b' + str(b + 1) + '#' + str(d + 1))
 
     constraints = defaultdict(set)
     for i in choices:
@@ -109,7 +148,7 @@ if __name__ == "__main__":
     for i in (range(N)):
         for j in (range(N)):
             if matrix[i][j] > 0:
-                initial.append((i * N + j) * N + matrix[i][j] - 1)
+                initial.append('r' + str(i + 1) + 'c' + str(j + 1) + '#' + str(matrix[i][j]))
 
     print(choices)
     print(constraints)
@@ -119,20 +158,37 @@ if __name__ == "__main__":
     for i in initial:
         exclude_choice(i, choices, constraints, active_constraints)
 
+    branch = []
+    for i in (range(N)):
+        for j in (range(N)):
+            if matrix[i][j] == 0:
+                for k in (range(1, N + 1)):
+                    if check(k, i, j, n, matrix):
+                        branch.append('r' + str(i + 1) + 'c' + str(j + 1) + '#' + str(k))
+            if (len(branch)) > 0:
+                break
+        if (len(branch) > 0):
+            break
+
+    args = []
+    arg_choices = []
+    arg_constraints = []
+    arg_active_constraints = []
+    for b in branch:
+        arg_choices.append(copy.deepcopy(choices))
+        arg_constraints.append(copy.deepcopy(constraints))
+        arg_active_constraints.append(copy.deepcopy(active_constraints))
+        exclude_choice(b, arg_choices[len(arg_choices) - 1], arg_constraints[len(arg_constraints) - 1]
+                       , arg_active_constraints[len(arg_active_constraints) - 1])
+        args.append((N, arg_choices[len(arg_choices) - 1], arg_constraints[len(arg_constraints) - 1]
+                     , arg_active_constraints[len(arg_active_constraints) - 1]))
+
+    pool = multiprocessing.Pool()
+
     t1 = time.time()
-    ret = resolve(N, choices, constraints, active_constraints)
+    solutions = pool.starmap(resolve, args)
     t2 = time.time()
 
     print(t2 - t1)
 
-    print(len(ret))
-
-    if len(ret) == 1:
-        res = ret[0]
-        for i in res:
-            t, d = divmod(i, N)
-            d += 1
-            r, c = divmod(t, N)
-            matrix[r][c] = d
-
-        print(matrix)
+    print([len(s) for s in solutions if len(s) > 0])
