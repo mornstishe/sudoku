@@ -32,54 +32,52 @@ def read(fname):
 
 
 def check_row(elem, i, matrix):
-    for j in (range(len(matrix))):
-        if matrix[i][j] == elem:
-            return False
+    if matrix[i].count(elem):
+        return False
     else:
         return True
 
 
 def check_column(elem, j, matrix):
-    for i in (range(len(matrix))):
-        if matrix[i][j] == elem:
-            return False
+    if matrix[j].count(elem):
+        return False
     else:
         return True
 
 
 def check_square(elem, i, j, n, matrix):
-    ind1 = int(i / n)
-    ind2 = int(j / n)
-    for i1 in (range(ind1 * n, (ind1 + 1) * n)):
-        for j1 in (range(ind2 * n, (ind2 + 1) * n)):
-            if matrix[i1][j1] == elem:
-                return False
+    if matrix[(i // n) * n + j // n].count(elem):
+        return False
     else:
         return True
 
 
-def check(elem, i, j, n, matrix):
+def check(elem, i, j, n, matrix, matrix2, matrix3):
     if check_row(elem, i, matrix) \
-            and check_column(elem, j, matrix) \
-            and check_square(elem, i, j, n, matrix):
+            and check_column(elem, j, matrix2) \
+            and check_square(elem, i, j, n, matrix3):
         return True
     else:
         return False
 
 
-def resolve(n, matrix, ind, work):
+def resolve(n, matrix, ind, work, matrix2, matrix3):
     ret = []
     for elem in work[ind][1]:
         i, j = work[ind][0][0], work[ind][0][1]
-        if check(elem, i, j, n, matrix):
+        if check(elem, i, j, n, matrix, matrix2, matrix3):
             matrix[i][j] = elem
+            matrix2[j][i] = elem
+            matrix3[(i // n) * n + j // n][(i % n) * n + j % n] = elem
             if ind == len(work) - 1:
                 ret.append([[[i, j], elem]])
             else:
-                ret_next = resolve(n, matrix, ind + 1, work)
+                ret_next = resolve(n, matrix, ind + 1, work, matrix2, matrix3)
                 for p in ret_next:
                     ret.append([[[i, j], elem]] + p)
             matrix[i][j] = 0
+            matrix2[j][i] = 0
+            matrix3[(i // n) * n + j // n][(i % n) * n + j % n] = 0
 
     return ret
 
@@ -90,14 +88,15 @@ if __name__ == "__main__":
         exit(-1)
 
     print(n, matrix)
-
+    matrix2 = [[matrix[j][i] for j in range(n * n)] for i in range(n * n)]
+    matrix3 = [[matrix[(i // n) * n + j // n][(i % n) * n + j % n] for j in range(n * n)] for i in range(n * n)]
     work = []
     for i in (range(len(matrix))):
         for j in (range(len(matrix))):
             if matrix[i][j] == 0:
                 l = []
                 for k in (range(1, len(matrix) + 1)):
-                    if check(k, i, j, n, matrix):
+                    if check(k, i, j, n, matrix, matrix2, matrix3):
                         l.append(k)
                 if len(l):
                     work.append([[i, j], l])
@@ -110,7 +109,7 @@ if __name__ == "__main__":
         arg_work.append(copy.deepcopy(work))
         arg_work[len(arg_work) - 1][0][1][:] = [w]
         print(arg_work[len(arg_work) - 1])
-        args.append((n, matrix, 0, arg_work[len(arg_work) - 1]))
+        args.append((n, matrix, 0, arg_work[len(arg_work) - 1], matrix2, matrix3))
 
     print(args)
 
