@@ -101,16 +101,47 @@ if __name__ == "__main__":
 
     print(work)
 
+    while True:
+        wc1 = len(work)
+        chk = False
+        for ind in range(len(work)):
+            if len(work[ind][1]) == 1:
+                i, j = work[ind][0][0], work[ind][0][1]
+                matrix[i][j] = work[ind][1][0]
+                matrix2[j][i] = work[ind][1][0]
+                matrix3[(i // n) * n + j // n][(i % n) * n + j % n] = work[ind][1][0]
+                chk = True
+        if chk:
+            ind = 0
+            while ind < len(work):
+                for k in (work[ind][1]):
+                    i, j = work[ind][0][0], work[ind][0][1]
+                    if not check(k, i, j, n, matrix, matrix2, matrix3):
+                        work[ind][1].remove(k)
+                if len(work[ind][1]) == 0:
+                    del work[ind]
+                else:
+                    ind += 1
+        wc2 = len(work)
+        if wc1 == wc2:
+            break
+
     t1 = time.time()
-    solution = resolve(n, matrix, 0, work, matrix2, matrix3)
+    if len(work):
+        solution = resolve(n, matrix, 0, work, matrix2, matrix3)
+    else:
+        solution = []
     t2 = time.time()
 
     print(t2 - t1)
 
     print(len(solution))
 
-    if (len(solution) == 1):
+    if len(solution) == 1:
         for s in solution[0]:
             matrix[s[0][0]][s[0][1]] = s[1]
 
+        print(matrix)
+
+    if (len(work) == 0):
         print(matrix)
