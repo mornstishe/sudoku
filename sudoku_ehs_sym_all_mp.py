@@ -32,42 +32,6 @@ def read(fname):
     return 0, []
 
 
-def check_row(elem, i, matrix):
-    for j in (range(len(matrix))):
-        if matrix[i][j] == elem:
-            return False
-    else:
-        return True
-
-
-def check_column(elem, j, matrix):
-    for i in (range(len(matrix))):
-        if matrix[i][j] == elem:
-            return False
-    else:
-        return True
-
-
-def check_square(elem, i, j, n, matrix):
-    ind1 = int(i / n)
-    ind2 = int(j / n)
-    for i1 in (range(ind1 * n, (ind1 + 1) * n)):
-        for j1 in (range(ind2 * n, (ind2 + 1) * n)):
-            if matrix[i1][j1] == elem:
-                return False
-    else:
-        return True
-
-
-def check(elem, i, j, n, matrix):
-    if check_row(elem, i, matrix) \
-            and check_column(elem, j, matrix) \
-            and check_square(elem, i, j, n, matrix):
-        return True
-    else:
-        return False
-
-
 def exclude_choice(choice, choices, constraints, active_constraints):
     for constraint_to_remove in choices[choice]:
         active_constraints.remove(constraint_to_remove)
@@ -108,12 +72,43 @@ def resolve(N, choices, constraints, active_constraints):
     return ret
 
 
+def check_row(elem, i, matrix):
+    if matrix[i].count(elem):
+        return False
+    else:
+        return True
+
+
+def check_column(elem, j, matrix):
+    if matrix[j].count(elem):
+        return False
+    else:
+        return True
+
+
+def check_square(elem, i, j, n, matrix):
+    if matrix[(i // n) * n + j // n].count(elem):
+        return False
+    else:
+        return True
+
+
+def check(elem, i, j, n, matrix, matrix2, matrix3):
+    if matrix[i][j] == 0 and check_row(elem, i, matrix) \
+            and check_column(elem, j, matrix2) and check_square(elem, i, j, n, matrix3):
+        return True
+    else:
+        return False
+
+
 if __name__ == "__main__":
     n, matrix = read(sys.argv[1])
     if n == 0:
         exit(-1)
 
     print(n, matrix)
+    matrix2 = [[matrix[j][i] for j in range(n * n)] for i in range(n * n)]
+    matrix3 = [[matrix[(i // n) * n + j // n][(i % n) * n + j % n] for j in range(n * n)] for i in range(n * n)]
 
     N = n * n
 
@@ -163,7 +158,7 @@ if __name__ == "__main__":
         for j in (range(N)):
             if matrix[i][j] == 0:
                 for k in (range(1, N + 1)):
-                    if check(k, i, j, n, matrix):
+                    if check(k, i, j, n, matrix, matrix2, matrix3):
                         branch.append('r' + str(i + 1) + 'c' + str(j + 1) + '#' + str(k))
             if (len(branch)) > 0:
                 break
