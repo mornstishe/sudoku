@@ -1,5 +1,7 @@
 import sys
 import time
+import multiprocessing
+import copy
 
 
 def read(fname):
@@ -168,22 +170,22 @@ if __name__ == "__main__":
         if len(work) == wc:
             break
 
+    args = []
+    arg_work = []
+    for w in work[0][1]:
+        arg_work.append(copy.deepcopy(work))
+        arg_work[len(arg_work) - 1][0][1][:] = [w]
+        print(arg_work[len(arg_work) - 1])
+        args.append((n, matrix, 0, arg_work[len(arg_work) - 1], matrix2, matrix3))
+
+    print(args)
+
+    pool = multiprocessing.Pool()
+
     t1 = time.time()
-    if len(work):
-        solution = resolve(n, matrix, 0, work, matrix2, matrix3)
-    else:
-        solution = []
+    solutions = pool.starmap(resolve, args)
     t2 = time.time()
 
     print(t2 - t1)
 
-    print(len(solution))
-
-    if len(solution) == 1:
-        for s in solution[0]:
-            matrix[s[0][0]][s[0][1]] = s[1]
-
-        print(matrix)
-
-    if (len(work) == 0):
-        print(matrix)
+    print([len(s) for s in solutions if len(s) > 0])

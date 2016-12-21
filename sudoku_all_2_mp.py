@@ -53,9 +53,8 @@ def check_square(elem, i, j, n, matrix):
 
 
 def check(elem, i, j, n, matrix, matrix2, matrix3):
-    if check_row(elem, i, matrix) \
-            and check_column(elem, j, matrix2) \
-            and check_square(elem, i, j, n, matrix3):
+    if matrix[i][j] == 0 and check_row(elem, i, matrix) \
+            and check_column(elem, j, matrix2) and check_square(elem, i, j, n, matrix3):
         return True
     else:
         return False
