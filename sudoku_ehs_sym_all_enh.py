@@ -230,20 +230,23 @@ if __name__ == "__main__":
     for i in initial:
         exclude_choice(i, choices, constraints, active_constraints)
 
-    t1 = time.time()
-    ret = resolve(N, choices, constraints, active_constraints)
-    t2 = time.time()
-
-    print(t2 - t1)
-
-    print(len(ret))
-
-    if len(ret) == 1:
-        res = ret[0]
-        for i in res:
-            r = int(i[1]) - 1
-            c = int(i[3]) - 1
-            d = int(i[5])
-            matrix[r][c] = d
-
+    if len(work) == 0:
         print(matrix)
+    else:
+        t1 = time.time()
+        ret = resolve(N, choices, constraints, active_constraints)
+        t2 = time.time()
+
+        print(t2 - t1)
+
+        print(len(ret))
+
+        if len(ret) == 1:
+            res = ret[0]
+            for i in res:
+                r = int(i[1]) - 1
+                c = int(i[3]) - 1
+                d = int(i[5])
+                matrix[r][c] = d
+
+            print(matrix)

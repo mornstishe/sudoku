@@ -244,25 +244,28 @@ if __name__ == "__main__":
         if (len(branch) > 0):
             break
 
-    args = []
-    arg_choices = []
-    arg_constraints = []
-    arg_active_constraints = []
-    for b in branch:
-        arg_choices.append(copy.deepcopy(choices))
-        arg_constraints.append(copy.deepcopy(constraints))
-        arg_active_constraints.append(copy.deepcopy(active_constraints))
-        exclude_choice(b, arg_choices[len(arg_choices) - 1], arg_constraints[len(arg_constraints) - 1]
-                       , arg_active_constraints[len(arg_active_constraints) - 1])
-        args.append((N, arg_choices[len(arg_choices) - 1], arg_constraints[len(arg_constraints) - 1]
-                     , arg_active_constraints[len(arg_active_constraints) - 1]))
+    if len(work) == 0:
+        print(matrix)
+    else:
+        args = []
+        arg_choices = []
+        arg_constraints = []
+        arg_active_constraints = []
+        for b in branch:
+            arg_choices.append(copy.deepcopy(choices))
+            arg_constraints.append(copy.deepcopy(constraints))
+            arg_active_constraints.append(copy.deepcopy(active_constraints))
+            exclude_choice(b, arg_choices[len(arg_choices) - 1], arg_constraints[len(arg_constraints) - 1]
+                           , arg_active_constraints[len(arg_active_constraints) - 1])
+            args.append((N, arg_choices[len(arg_choices) - 1], arg_constraints[len(arg_constraints) - 1]
+                         , arg_active_constraints[len(arg_active_constraints) - 1]))
 
-    pool = multiprocessing.Pool()
+        pool = multiprocessing.Pool()
 
-    t1 = time.time()
-    solutions = pool.starmap(resolve, args)
-    t2 = time.time()
+        t1 = time.time()
+        solutions = pool.starmap(resolve, args)
+        t2 = time.time()
 
-    print(t2 - t1)
+        print(t2 - t1)
 
-    print([len(s) for s in solutions if len(s) > 0])
+        print([len(s) for s in solutions if len(s) > 0])

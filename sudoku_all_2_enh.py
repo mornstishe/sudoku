@@ -168,22 +168,21 @@ if __name__ == "__main__":
         if len(work) == wc:
             break
 
-    t1 = time.time()
-    if len(work):
-        solution = resolve(n, matrix, 0, work, matrix2, matrix3)
+    print(work)
+
+    if len(work) == 0:
+        print(matrix)
     else:
-        solution = []
-    t2 = time.time()
+        t1 = time.time()
+        solution = resolve(n, matrix, 0, work, matrix2, matrix3)
+        t2 = time.time()
 
-    print(t2 - t1)
+        print(t2 - t1)
 
-    print(len(solution))
+        print(len(solution))
 
-    if len(solution) == 1:
-        for s in solution[0]:
-            matrix[s[0][0]][s[0][1]] = s[1]
+        if len(solution) == 1:
+            for s in solution[0]:
+                matrix[s[0][0]][s[0][1]] = s[1]
 
-        print(matrix)
-
-    if (len(work) == 0):
-        print(matrix)
+            print(matrix)

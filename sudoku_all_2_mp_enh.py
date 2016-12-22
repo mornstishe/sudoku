@@ -170,22 +170,27 @@ if __name__ == "__main__":
         if len(work) == wc:
             break
 
-    args = []
-    arg_work = []
-    for w in work[0][1]:
-        arg_work.append(copy.deepcopy(work))
-        arg_work[len(arg_work) - 1][0][1][:] = [w]
-        print(arg_work[len(arg_work) - 1])
-        args.append((n, matrix, 0, arg_work[len(arg_work) - 1], matrix2, matrix3))
+    print(work)
 
-    print(args)
+    if len(work) == 0:
+        print(matrix)
+    else:
+        args = []
+        arg_work = []
+        for w in work[0][1]:
+            arg_work.append(copy.deepcopy(work))
+            arg_work[len(arg_work) - 1][0][1][:] = [w]
+            print(arg_work[len(arg_work) - 1])
+            args.append((n, matrix, 0, arg_work[len(arg_work) - 1], matrix2, matrix3))
 
-    pool = multiprocessing.Pool()
+        print(args)
 
-    t1 = time.time()
-    solutions = pool.starmap(resolve, args)
-    t2 = time.time()
+        pool = multiprocessing.Pool()
 
-    print(t2 - t1)
+        t1 = time.time()
+        solutions = pool.starmap(resolve, args)
+        t2 = time.time()
 
-    print([len(s) for s in solutions if len(s) > 0])
+        print(t2 - t1)
+
+        print([len(s) for s in solutions if len(s) > 0])
