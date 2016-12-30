@@ -51,8 +51,9 @@ def check_square(elem, i, j, n, matrix):
 
 
 def check(elem, i, j, n, matrix, matrix2, matrix3):
-    if matrix[i][j] == 0 and check_row(elem, i, matrix) \
-            and check_column(elem, j, matrix2) and check_square(elem, i, j, n, matrix3):
+    if check_row(elem, i, matrix) \
+            and check_column(elem, j, matrix2) \
+            and check_square(elem, i, j, n, matrix3):
         return True
     else:
         return False
@@ -60,12 +61,23 @@ def check(elem, i, j, n, matrix, matrix2, matrix3):
 
 def resolve(n, matrix, ind, work, matrix2, matrix3):
     ret = []
+    temp_storage = dict()
     for elem in work[ind][1]:
         i, j = work[ind][0][0], work[ind][0][1]
         if check(elem, i, j, n, matrix, matrix2, matrix3):
             matrix[i][j] = elem
             matrix2[j][i] = elem
             matrix3[(i // n) * n + j // n][(i % n) * n + j % n] = elem
+            for ind2 in range(ind + 1, len(work)):
+                t = []
+                if (i == work[ind2][0][0] \
+                            or j == work[ind2][0][1] \
+                            or (i // n == work[ind2][0][0] // n and j // n == work[ind2][0][1] // n)) \
+                        and elem in work[ind2][1]:
+                    work[ind2][1].remove(elem)
+                    t.append(elem)
+                if (len(t)):
+                    temp_storage[ind2] = t
             if ind == len(work) - 1:
                 ret.append([[[i, j], elem]])
             else:
@@ -75,6 +87,10 @@ def resolve(n, matrix, ind, work, matrix2, matrix3):
             matrix[i][j] = 0
             matrix2[j][i] = 0
             matrix3[(i // n) * n + j // n][(i % n) * n + j % n] = 0
+            for ti1 in temp_storage:
+                for ti2 in temp_storage[ti1]:
+                    work[ti1][1].append(ti2)
+            temp_storage.clear()
 
     return ret
 
